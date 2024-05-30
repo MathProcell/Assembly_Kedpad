@@ -1,0 +1,205 @@
+;Control de teclado matricial 4x4
+;Mateo procell 
+;Escanea un teclado matricial de 4x4 y muestra la última tecla presionada
+;para controlar el sentido de un motor
+
+.include "m328Pdef.inc"
+#define F_CPU 1600000UL
+
+;ENTRADA Y SALIDAS
+ldi r21, 0b00001000
+out DDRB, r20
+
+ldi r21, 0b11111111
+out DDRC, r21
+
+ldi r21, 0b00001111
+out DDRD, r21
+out PORTD, r21
+
+bucle:
+en r23, PIND
+
+;COMPARACIONES 
+cpi r19, 0b00010001 ;ADELANTE 
+breq case_1
+cpi r19, 0b00100001 ;ATRAS
+breq case_2
+cpi r19, 0b01000001 ;IZQUIERDA
+breq case_3
+cpi r19, 0b10000001 ;DERECHA
+breq case_4
+ldi r24, 0b00000000 ; Detiene todos los motores
+out PORTC, r24
+
+sbis PINB, PB0
+rjmp case_5
+
+sbi PINB, PB0
+rjmp case_6
+bucle rjmp
+
+;CASOS
+caso_1:
+ldi r24, 0b00000011
+fuera PORTC, r24
+
+sbi PORTC, PC4
+
+ldi r17, 240  
+retardo_encendido:
+rcall retardo_interno
+dec r17
+brne retardo_encendido
+
+cbi PORTC, PC4 ;APAGA PC4
+
+ldi r17, 10     
+retardo_apagado:
+rcall retardo_interno
+dec r17
+brne retardo_apagado
+rjmp loop        
+;RETARDO INTERNO
+retardo_interno:
+ldi r18, 1
+bucle:
+dec r18
+brne bucle
+ret
+
+case_2:
+ldi r24, 0b00001100
+fuera de PORTC, r24
+
+sbi PORTC, PC4 
+
+ldi r17, 240   
+retardo_encendido1:
+rcall retardo_interno1
+dec r17
+brne retardo_encendido1
+
+cbi PORTC, PC4 
+
+ldi r17, 10      
+retardo_apagado1:
+rcall retardo_interno1
+dec r17
+brne retardo_apagado1
+rjmp loop       
+
+;RETARDO INTERNO
+retardo_interno1:
+ldi r18, 1
+bucle1:
+dec r18
+brne bucle1
+ret
+case_3: ;IZQUIERDA
+ldi r24, 0b00000001
+salida PORTC, r24
+
+sbi PORTC, PC4 
+
+ldi r17, 240   
+retardo_encendido2:
+rcall retardo_interno2
+dec r17
+brne retardo_encendido2
+
+cbi PORTC, PC4 ;APAGA PC4
+
+ldi r17, 10      
+retardo_apagado2:
+rcall retardo_interno2
+dec r17
+brne retardo_apagado2
+rjmp loop       
+
+;RETARDO INTERNO
+retardo_interno2:
+ldi r18, 1
+bucle2:
+dec r18
+brne bucle2
+ret
+caso_4: 
+ldi r24, 0b00000010
+fuera PORTC, r24
+
+sbi PORTC, PC4 
+
+ldi r17, 240  
+retardo_encendido3:
+rcall retardo_interno3
+dec r17
+brne retardo_encendido3
+
+cbi PORTC, PC4 
+
+ldi r17, 10      
+retardo_apagado3:
+rcall retardo_interno3
+dec r17
+brne retardo_apagado3
+rjmp loop       
+
+;RETARDO INTERNO
+retardo_interno3:
+ldi r18, 1
+bucle3:
+dec r18
+brne bucle3
+ret
+caso_5:
+sbi PORTB, PB3 
+
+ldi r17, 240   
+retardo_encendido4:
+rcall retardo_interno4
+dec r17
+brne retardo_encendido4
+
+cbi PORTB, PB3 
+
+ldi r17, 10      
+retardo_apagado4:
+rcall retardo_interno4
+dec r17
+brne retardo_apagado4
+rjmp loop       
+
+;RETARDO INTERNO
+retardo_interno4:
+ldi r18, 25
+bucle4:
+dec r18
+brne bucle4
+ret
+caso_6:
+patea:
+sbi PORTB, PB3 
+
+ldi r17, 240   
+retardo_encendido5:
+rcall retardo_interno5
+dec r17
+brne retardo_encendido5
+
+cbi PORTB, PB3 
+
+ldi r17, 10      
+retardo_apagado5:
+rcall retardo_interno5
+dec r17
+brne retardo_apagado5
+rjmp loop       
+
+;RETARDO INTERNO
+retardo_interno5:
+ldi r18, 1
+bucle5:
+dec r18
+brne bucle5
+ret
